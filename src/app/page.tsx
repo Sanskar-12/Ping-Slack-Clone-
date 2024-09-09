@@ -1,12 +1,10 @@
-import { Button } from '@/components/ui/button'
+import AuthScreen from '@/features/auth/components/auth-screen'
 import React from 'react'
 
 const Home = () => {
   return (
-    <div className='text-rose-500'>Hello world
-    <Button variant={"slack"}>Click</Button>
-    </div>
+   <AuthScreen/>
   )
 }
 
-export default Home
+export default Home  
