@@ -23,6 +23,7 @@ interface SignUpCardProps {
 const SignUpCard = ({ setState }: SignUpCardProps) => {
   const { signIn } = useAuthActions();
 
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmpassword, setConfirmPassword] = useState("");
@@ -37,13 +38,13 @@ const SignUpCard = ({ setState }: SignUpCardProps) => {
   const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if(password!==confirmpassword) {
-      setError("Passwords do not match")
+    if (password !== confirmpassword) {
+      setError("Passwords do not match");
       return;
     }
 
     setPending(true);
-    signIn("password", { email, password, flow: "signUp" })
+    signIn("password", { name, email, password, flow: "signUp" })
       .catch(() => {
         setError("Something went wrong");
       })
@@ -70,6 +71,14 @@ const SignUpCard = ({ setState }: SignUpCardProps) => {
         <form className="space-y-2.5" onSubmit={handleFormSubmit}>
           <Input
             disabled={pending}
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder="Full Name"
+            type="text"
+            required
+          />
+          <Input
+            disabled={pending}
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="Email"
@@ -88,7 +97,7 @@ const SignUpCard = ({ setState }: SignUpCardProps) => {
             disabled={pending}
             value={confirmpassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
-            placeholder="Password"
+            placeholder="Confirm Password"
             type="password"
             required
           />
