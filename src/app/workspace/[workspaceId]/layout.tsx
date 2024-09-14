@@ -1,21 +1,23 @@
-"use client"
+"use client";
 
 import Toolbar from "@/app/workspace/[workspaceId]/toolbar";
 import { ReactNode } from "react";
-import { Id } from "../../../../convex/_generated/dataModel";
+import Sidebar from "./sidebar";
 
 interface WorkSpaceIdLayoutProps {
   children: ReactNode;
-  params:{
-    workspaceId:Id<"workspaces">
-  }
 }
 
-const WorkSpaceIdLayout = ({ children,params:{workspaceId} }: WorkSpaceIdLayoutProps) => {
+const WorkSpaceIdLayout = ({
+  children,
+}: WorkSpaceIdLayoutProps) => {
   return (
     <div className="h-full">
-      <Toolbar workspaceId={workspaceId}/>
-      {children}
+      <Toolbar />
+      <div className="flex h-[calc(100vh-40px)]">
+        <Sidebar />
+        {children}
+      </div>
     </div>
   );
 };

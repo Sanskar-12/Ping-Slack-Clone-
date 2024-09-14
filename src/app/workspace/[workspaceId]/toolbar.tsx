@@ -1,15 +1,13 @@
 import React from "react";
 import { Button } from "../../../components/ui/button";
 import { Info, Search } from "lucide-react";
-import { Id } from "../../../../convex/_generated/dataModel";
 import { useGetWorkSpace } from "@/features/workspaces/api/use-get-workspace";
+import { useWorkSpaceId } from "@/features/workspaces/api/use-workspace-id";
 
-interface ToolbarProps {
-    workspaceId:Id<"workspaces">
-}
+const Toolbar = () => {
+  const workspaceId = useWorkSpaceId();
 
-const Toolbar = ({workspaceId}:ToolbarProps) => {
-  const {data}=useGetWorkSpace({id:workspaceId})
+  const { data } = useGetWorkSpace({ id: workspaceId });
 
   return (
     <nav className="bg-[#481349] flex items-center justify-between h-10 p-1.5">
