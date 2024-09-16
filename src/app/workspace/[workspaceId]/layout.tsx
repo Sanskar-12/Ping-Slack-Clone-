@@ -3,20 +3,34 @@
 import Toolbar from "@/app/workspace/[workspaceId]/toolbar";
 import { ReactNode } from "react";
 import Sidebar from "./sidebar";
+import {
+  ResizableHandle,
+  ResizablePanel,
+  ResizablePanelGroup,
+} from "@/components/ui/resizable";
+import WorkSpaceSidebar from "./workspace-sidebar";
 
 interface WorkSpaceIdLayoutProps {
   children: ReactNode;
 }
 
-const WorkSpaceIdLayout = ({
-  children,
-}: WorkSpaceIdLayoutProps) => {
+const WorkSpaceIdLayout = ({ children }: WorkSpaceIdLayoutProps) => {
   return (
     <div className="h-full">
       <Toolbar />
       <div className="flex h-[calc(100vh-40px)]">
         <Sidebar />
-        {children}
+        <ResizablePanelGroup direction="horizontal" autoSaveId="workspace-layout">
+          <ResizablePanel
+            defaultSize={20}
+            minSize={11}
+            className="bg-[#5E2C5F]"
+          >
+            <WorkSpaceSidebar/>
+          </ResizablePanel>
+          <ResizableHandle withHandle />
+          <ResizablePanel minSize={20}>{children}</ResizablePanel>
+        </ResizablePanelGroup>
       </div>
     </div>
   );
