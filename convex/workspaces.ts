@@ -1,11 +1,48 @@
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 import { getAuthUserId } from "@convex-dev/auth/server";
+import { Id } from "./_generated/dataModel";
+
+const generateCode = () => {
+  const code = Array.from(
+    { length: 6 },
+    () => "0123456789abcdefghijklmnopqrstuvwxyz"[Math.floor(Math.random() * 36)]
+  ).join("");
+
+  return code;
+};
 
 export const get = query({
   args: {},
   handler: async (ctx) => {
-    return await ctx.db.query("workspaces").collect();
+    const userId = await getAuthUserId(ctx);
+
+    if (!userId) {
+      return [];
+    }
+
+    const members = await ctx.db
+      .query("members")
+      .withIndex("by_user_id", (q) => q.eq("userId", userId))
+      .collect();
+
+    const workSpaceIds = members.map((member) => member.workspaceId);
+
+    const workspaces: ({
+      _id: Id<"workspaces">;
+      _creationTime: number;
+      name: string;
+      userId: Id<"users">;
+      joinCode: string;
+    } | null)[] = [];
+
+    for (const workspaceId of workSpaceIds) {
+      const workspace = await ctx.db.get(workspaceId);
+
+      workspaces.push(workspace);
+    }
+
+    return workspaces;
   },
 });
 
@@ -18,6 +55,17 @@ export const getById = query({
 
     if (!userId) {
       throw new Error("Unauthorised");
+    }
+
+    const member = await ctx.db
+      .query("members")
+      .withIndex("by_workspace_id_user_id", (q) =>
+        q.eq("workspaceId", args.id).eq("userId", userId)
+      )
+      .unique();
+
+    if (!member) {
+      return null;
     }
 
     return await ctx.db.get(args.id);
@@ -35,13 +83,18 @@ export const create = mutation({
       throw new Error("Unauthorised");
     }
 
-    // TODO: create a method to create random joinCode
-    const joinCode = "123456";
+    const joinCode = generateCode();
 
     const workSpaceId = await ctx.db.insert("workspaces", {
       name: args.name,
       userId,
       joinCode,
+    });
+
+    await ctx.db.insert("members", {
+      userId,
+      workspaceId: workSpaceId,
+      role: "admin",
     });
 
     return workSpaceId;
