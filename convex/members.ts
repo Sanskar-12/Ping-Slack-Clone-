@@ -11,6 +11,7 @@ export const current = query({
       return null;
     }
 
+    // we are returning only one user who is the member of the workspace 
     const member = await ctx.db
       .query("members")
       .withIndex("by_workspace_id_user_id", (q) =>
