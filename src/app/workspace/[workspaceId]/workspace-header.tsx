@@ -7,13 +7,15 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Doc } from "../../../../convex/_generated/dataModel";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, ListFilter, SquarePen } from "lucide-react";
+import Hint from "@/components/hint";
 
 interface WorkSpaceHeaderProps {
   workspace: Doc<"workspaces">;
+  isAdmin: boolean;
 }
 
-const WorkSpaceHeader = ({ workspace }: WorkSpaceHeaderProps) => {
+const WorkSpaceHeader = ({ workspace, isAdmin }: WorkSpaceHeaderProps) => {
   return (
     <div className="flex items-center justify-between px-4 h-[49px] gap-0.5">
       <DropdownMenu>
@@ -38,12 +40,38 @@ const WorkSpaceHeader = ({ workspace }: WorkSpaceHeaderProps) => {
               <p className="text-xs text-muted-foreground">Active workspace</p>
             </div>
           </DropdownMenuItem>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem className="cursor-pointer py-2" onClick={() => {}}>
-            Invite people to {workspace?.name}
-          </DropdownMenuItem>
+          {isAdmin && (
+            <>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                className="cursor-pointer py-2"
+                onClick={() => {}}
+              >
+                Invite people to {workspace?.name}
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                className="cursor-pointer py-2"
+                onClick={() => {}}
+              >
+                Preferences
+              </DropdownMenuItem>
+            </>
+          )}
         </DropdownMenuContent>
       </DropdownMenu>
+      <div className="flex items-center gap-0.5">
+        <Hint label="Filter Conversations" side="bottom">
+          <Button variant={"transparent"} size={"iconSm"}>
+            <ListFilter className="size-4" />
+          </Button>
+        </Hint>
+        <Hint label="New Message" side="bottom">
+          <Button variant={"transparent"} size={"iconSm"}>
+            <SquarePen className="size-4" />
+          </Button>
+        </Hint>
+      </div>
     </div>
   );
 };
