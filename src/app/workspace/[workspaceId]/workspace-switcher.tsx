@@ -18,7 +18,7 @@ const WorkSpaceSwitcher = () => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [_open, setOpen] = useCreateWorkSpaceModal();
 
-  const { data: workspaces, isLoading: workspacesLoading } = useGetWorkSpaces();
+  const { data: workspaces } = useGetWorkSpaces();
   const { data: workspace, isLoading: workspaceLoading } = useGetWorkSpace({
     id: workspaceId,
   });

@@ -9,6 +9,7 @@ import {
   ResizablePanelGroup,
 } from "@/components/ui/resizable";
 import WorkSpaceSidebar from "./workspace-sidebar";
+import { Toaster } from "@/components/ui/sonner";
 
 interface WorkSpaceIdLayoutProps {
   children: ReactNode;
@@ -17,6 +18,7 @@ interface WorkSpaceIdLayoutProps {
 const WorkSpaceIdLayout = ({ children }: WorkSpaceIdLayoutProps) => {
   return (
     <div className="h-full">
+      <Toaster/>
       <Toolbar />
       <div className="flex h-[calc(100vh-40px)]">
         <Sidebar />
