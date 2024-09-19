@@ -1,8 +1,17 @@
 import { useCurrentMember } from "@/features/members/api/user-current-members";
 import { useGetWorkSpace } from "@/features/workspaces/api/use-get-workspace";
 import { useWorkSpaceId } from "@/features/workspaces/api/use-workspace-id";
-import { AlertTriangle, Loader } from "lucide-react";
+import {
+  AlertTriangle,
+  HashIcon,
+  Loader,
+  MessageSquareText,
+  SendHorizonal,
+} from "lucide-react";
 import WorkSpaceHeader from "./workspace-header";
+import SidebarItem from "./sidebar-item";
+import { useGetChannels } from "@/features/channels/api/use-get-channels";
+import WorkspaceSection from "./workspace-section";
 
 const WorkSpaceSidebar = () => {
   const workspaceId = useWorkSpaceId();
@@ -12,6 +21,9 @@ const WorkSpaceSidebar = () => {
   });
   const { data: workspace, isLoading: workspaceLoading } = useGetWorkSpace({
     id: workspaceId,
+  });
+  const { data: channels, isLoading: channelsLoading } = useGetChannels({
+    workspaceId,
   });
 
   if (workspaceLoading || memberLoading) {
@@ -31,9 +43,28 @@ const WorkSpaceSidebar = () => {
     );
   }
 
-  return <div className="flex flex-col bg-[#5E2C5F] h-full">
-    <WorkSpaceHeader workspace={workspace} isAdmin={member?.role==="admin"}/>
-  </div>;
+  return (
+    <div className="flex flex-col bg-[#5E2C5F] h-full">
+      <WorkSpaceHeader
+        workspace={workspace}
+        isAdmin={member?.role === "admin"}
+      />
+      <div className="flex flex-col px-2 mt-3">
+        <SidebarItem label="Threads" icon={MessageSquareText} id="threads" />
+        <SidebarItem label="Drafts & Sent" icon={SendHorizonal} id="drafts" />
+        <WorkspaceSection label="Channels" hint="New channel" onNew={() => {}}>
+          {channels?.map((item) => (
+            <SidebarItem
+              key={item._id}
+              icon={HashIcon}
+              label={item.name}
+              id={item._id}
+            />
+          ))}
+        </WorkspaceSection>
+      </div>
+    </div>
+  );
 };
 
 export default WorkSpaceSidebar;
