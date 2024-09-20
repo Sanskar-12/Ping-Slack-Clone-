@@ -1,4 +1,4 @@
-import { useCurrentMember } from "@/features/members/api/user-current-members";
+import { useCurrentMember } from "@/features/members/api/use-current-members";
 import { useGetWorkSpace } from "@/features/workspaces/api/use-get-workspace";
 import { useWorkSpaceId } from "@/features/workspaces/api/use-workspace-id";
 import {
@@ -12,6 +12,7 @@ import WorkSpaceHeader from "./workspace-header";
 import SidebarItem from "./sidebar-item";
 import { useGetChannels } from "@/features/channels/api/use-get-channels";
 import WorkspaceSection from "./workspace-section";
+import { useGetMembers } from "@/features/members/api/use-get-members";
 
 const WorkSpaceSidebar = () => {
   const workspaceId = useWorkSpaceId();
@@ -25,6 +26,7 @@ const WorkSpaceSidebar = () => {
   const { data: channels, isLoading: channelsLoading } = useGetChannels({
     workspaceId,
   });
+  const {data:members,isLoading:membersLoading}=useGetMembers({workspaceId})
 
   if (workspaceLoading || memberLoading) {
     return (
@@ -52,17 +54,24 @@ const WorkSpaceSidebar = () => {
       <div className="flex flex-col px-2 mt-3">
         <SidebarItem label="Threads" icon={MessageSquareText} id="threads" />
         <SidebarItem label="Drafts & Sent" icon={SendHorizonal} id="drafts" />
-        <WorkspaceSection label="Channels" hint="New channel" onNew={() => {}}>
-          {channels?.map((item) => (
-            <SidebarItem
-              key={item._id}
-              icon={HashIcon}
-              label={item.name}
-              id={item._id}
-            />
-          ))}
-        </WorkspaceSection>
       </div>
+      <WorkspaceSection label="Channels" hint="New channel" onNew={() => {}}>
+        {channels?.map((item) => (
+          <SidebarItem
+            key={item._id}
+            icon={HashIcon}
+            label={item.name}
+            id={item._id}
+          />
+        ))}
+      </WorkspaceSection>
+      {
+        members?.map((item)=>(
+          <div key={item.user._id}>
+            {item.user.name}
+          </div>
+        ))
+      }
     </div>
   );
 };
