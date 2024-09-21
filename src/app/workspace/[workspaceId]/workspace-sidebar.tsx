@@ -13,9 +13,11 @@ import SidebarItem from "./sidebar-item";
 import { useGetChannels } from "@/features/channels/api/use-get-channels";
 import WorkspaceSection from "./workspace-section";
 import { useGetMembers } from "@/features/members/api/use-get-members";
+import { Id } from "../../../../convex/_generated/dataModel";
+import UserItem from "./user-item";
 
 const WorkSpaceSidebar = () => {
-  const workspaceId = useWorkSpaceId();
+  const workspaceId: Id<"workspaces"> = useWorkSpaceId();
 
   const { data: member, isLoading: memberLoading } = useCurrentMember({
     workspaceId,
@@ -26,7 +28,9 @@ const WorkSpaceSidebar = () => {
   const { data: channels, isLoading: channelsLoading } = useGetChannels({
     workspaceId,
   });
-  const {data:members,isLoading:membersLoading}=useGetMembers({workspaceId})
+  const { data: members, isLoading: membersLoading } = useGetMembers({
+    workspaceId,
+  });
 
   if (workspaceLoading || memberLoading) {
     return (
@@ -65,13 +69,20 @@ const WorkSpaceSidebar = () => {
           />
         ))}
       </WorkspaceSection>
-      {
-        members?.map((item)=>(
-          <div key={item.user._id}>
-            {item.user.name}
-          </div>
-        ))
-      }
+      <WorkspaceSection
+        label="Direct Messages"
+        hint="New direct messages"
+        onNew={() => {}}
+      >
+        {members?.map((item) => (
+          <UserItem
+            key={item._id}
+            id={item._id}
+            label={item.user.name}
+            image={item.user.image}
+          />
+        ))}
+      </WorkspaceSection>
     </div>
   );
 };
