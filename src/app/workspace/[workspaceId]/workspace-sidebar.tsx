@@ -15,9 +15,12 @@ import WorkspaceSection from "./workspace-section";
 import { useGetMembers } from "@/features/members/api/use-get-members";
 import { Id } from "../../../../convex/_generated/dataModel";
 import UserItem from "./user-item";
+import { useCreateChannelsModal } from "@/features/channels/store/use-create-channels-modal";
 
 const WorkSpaceSidebar = () => {
   const workspaceId: Id<"workspaces"> = useWorkSpaceId();
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [_open, setOpen] = useCreateChannelsModal();
 
   const { data: member, isLoading: memberLoading } = useCurrentMember({
     workspaceId,
@@ -59,7 +62,11 @@ const WorkSpaceSidebar = () => {
         <SidebarItem label="Threads" icon={MessageSquareText} id="threads" />
         <SidebarItem label="Drafts & Sent" icon={SendHorizonal} id="drafts" />
       </div>
-      <WorkspaceSection label="Channels" hint="New channel" onNew={() => {}}>
+      <WorkspaceSection
+        label="Channels"
+        hint="New channel"
+        onNew={member?.role === "admin" ? () => setOpen(true) : undefined}
+      >
         {channels?.map((item) => (
           <SidebarItem
             key={item._id}
