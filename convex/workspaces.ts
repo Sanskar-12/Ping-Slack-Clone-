@@ -46,6 +46,38 @@ export const get = query({
   },
 });
 
+export const newJoinCode = mutation({
+  args: {
+    id: v.id("workspaces"),
+  },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+
+    if (!userId) {
+      throw new Error("Unauthorised");
+    }
+
+    const member = await ctx.db
+      .query("members")
+      .withIndex("by_workspace_id_user_id", (q) =>
+        q.eq("workspaceId", args.id).eq("userId", userId)
+      )
+      .unique();
+
+    if (!member || member.role !== "admin") {
+      throw new Error("Unauthorised");
+    }
+
+    const newJoinCode = generateCode();
+
+    await ctx.db.patch(args.id, {
+      joinCode: newJoinCode,
+    });
+
+    return args.id;
+  },
+});
+
 export const getById = query({
   args: {
     id: v.id("workspaces"),
@@ -97,10 +129,10 @@ export const create = mutation({
       role: "admin",
     });
 
-    await ctx.db.insert("channels",{
-      name:"general",
-      workspaceId:workSpaceId
-    })
+    await ctx.db.insert("channels", {
+      name: "general",
+      workspaceId: workSpaceId,
+    });
 
     return workSpaceId;
   },
