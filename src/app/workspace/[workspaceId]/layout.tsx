@@ -18,17 +18,20 @@ interface WorkSpaceIdLayoutProps {
 const WorkSpaceIdLayout = ({ children }: WorkSpaceIdLayoutProps) => {
   return (
     <div className="h-full">
-      <Toaster/>
+      <Toaster />
       <Toolbar />
       <div className="flex h-[calc(100vh-40px)]">
         <Sidebar />
-        <ResizablePanelGroup direction="horizontal" autoSaveId="workspace-layout">
+        <ResizablePanelGroup
+          direction="horizontal"
+          autoSaveId="workspace-layout"
+        >
           <ResizablePanel
             defaultSize={20}
             minSize={11}
             className="bg-[#5E2C5F]"
           >
-            <WorkSpaceSidebar/>
+            <WorkSpaceSidebar />
           </ResizablePanel>
           <ResizableHandle withHandle />
           <ResizablePanel minSize={20}>{children}</ResizablePanel>
