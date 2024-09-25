@@ -10,9 +10,12 @@ import { Button } from "@/components/ui/button";
 import { ChangeEvent, FormEvent, useState } from "react";
 import { useWorkSpaceId } from "@/features/workspaces/api/use-workspace-id";
 import { useCreateChannels } from "../api/use-create-channels";
+import { useRouter } from "next/navigation";
+import { Id } from "../../../../convex/_generated/dataModel";
 
 const CreateChannelsModal = () => {
-  const workspaceId = useWorkSpaceId();
+  const router = useRouter();
+  const workspaceId: Id<"workspaces"> = useWorkSpaceId();
   const [open, setOpen] = useCreateChannelsModal();
   const { mutate, isPending } = useCreateChannels();
 
@@ -35,8 +38,7 @@ const CreateChannelsModal = () => {
       { name, workspaceId },
       {
         onSuccess(id) {
-          // toast("WorkSpace Created!")
-          // router.push(`/workspace/${id}`);
+          router.push(`/workspace/${workspaceId}/channel/${id}`);
           handleClose();
         },
       }
@@ -61,7 +63,9 @@ const CreateChannelsModal = () => {
             placeholder="e.g. plan-budget"
           />
           <div className="flex justify-end">
-            <Button disabled={isPending} type="submit">Create</Button>
+            <Button disabled={isPending} type="submit">
+              Create
+            </Button>
           </div>
         </form>
       </DialogContent>

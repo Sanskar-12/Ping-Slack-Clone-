@@ -16,9 +16,11 @@ import { useGetMembers } from "@/features/members/api/use-get-members";
 import { Id } from "../../../../convex/_generated/dataModel";
 import UserItem from "./user-item";
 import { useCreateChannelsModal } from "@/features/channels/store/use-create-channels-modal";
+import { useChannelId } from "@/features/channels/api/use-workspace-id";
 
 const WorkSpaceSidebar = () => {
   const workspaceId: Id<"workspaces"> = useWorkSpaceId();
+  const channelId: Id<"channels"> = useChannelId();
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [_open, setOpen] = useCreateChannelsModal();
 
@@ -73,6 +75,7 @@ const WorkSpaceSidebar = () => {
             icon={HashIcon}
             label={item.name}
             id={item._id}
+            variant={channelId === item._id ? "active" : "default"}
           />
         ))}
       </WorkspaceSection>
