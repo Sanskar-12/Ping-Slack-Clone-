@@ -68,3 +68,33 @@ export const get = query({
     return channels;
   },
 });
+
+export const getById = query({
+  args: {
+    channelId: v.id("channels"),
+  },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+
+    if (!userId) return null;
+
+    const channel = await ctx.db.get(args.channelId);
+
+    if (!channel) {
+      return null;
+    }
+
+    const member = await ctx.db
+      .query("members")
+      .withIndex("by_workspace_id_user_id", (q) =>
+        q.eq("workspaceId", channel.workspaceId).eq("userId", userId)
+      )
+      .unique();
+
+    if (!member) {
+      return null;
+    }
+
+    return channel;
+  },
+});

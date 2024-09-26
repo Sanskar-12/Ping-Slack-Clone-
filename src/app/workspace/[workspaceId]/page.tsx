@@ -14,7 +14,9 @@ const WorkSpaceIdPage = () => {
   const router = useRouter();
   const workspaceId: Id<"workspaces"> = useWorkSpaceId();
   const [open, setOpen] = useCreateChannelsModal();
-  const {data:member,isLoading:memberLoading}=useCurrentMember({workspaceId})
+  const { data: member, isLoading: memberLoading } = useCurrentMember({
+    workspaceId,
+  });
 
   const { data: workspace, isLoading: workspaceLoading } =
     useGetWorkSpaceInfoById({
@@ -29,7 +31,13 @@ const WorkSpaceIdPage = () => {
   }, [channels]);
 
   useEffect(() => {
-    if (workspaceLoading || channelsLoading || memberLoading || !member ||  !workspace) {
+    if (
+      workspaceLoading ||
+      channelsLoading ||
+      memberLoading ||
+      !member ||
+      !workspace
+    ) {
       return;
     }
 
@@ -51,7 +59,7 @@ const WorkSpaceIdPage = () => {
     setOpen,
   ]);
 
-  if (workspaceLoading || channelsLoading) {
+  if (workspaceLoading || channelsLoading || memberLoading) {
     return (
       <div className="h-full flex-1 flex items-center justify-center flex-col gap-2">
         <Loader className="size-6 animate-spin text-muted-foreground" />
@@ -59,7 +67,7 @@ const WorkSpaceIdPage = () => {
     );
   }
 
-  if (!workspace || !workspaceId) {
+  if (!workspace || !workspaceId || !member) {
     return (
       <div className="h-full flex-1 flex items-center justify-center flex-col gap-2">
         <TriangleAlert className="size-6" />
@@ -73,9 +81,7 @@ const WorkSpaceIdPage = () => {
   return (
     <div className="h-full flex-1 flex items-center justify-center flex-col gap-2">
       <TriangleAlert className="size-6" />
-      <span className="text-sm text-muted-foreground">
-        No channel found
-      </span>
+      <span className="text-sm text-muted-foreground">No channel found</span>
     </div>
   );
 };
