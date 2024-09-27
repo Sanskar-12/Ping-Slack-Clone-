@@ -2,6 +2,69 @@ import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 import { getAuthUserId } from "@convex-dev/auth/server";
 
+export const remove = mutation({
+  args: {
+    channelId: v.id("channels"),
+    workspaceId: v.id("workspaces"),
+  },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+
+    if (!userId) {
+      throw new Error("Unauthorised");
+    }
+
+    const member = await ctx.db
+      .query("members")
+      .withIndex("by_workspace_id_user_id", (q) =>
+        q.eq("workspaceId", args.workspaceId).eq("userId", userId)
+      )
+      .unique();
+
+    if (!member || member.role !== "admin") {
+      throw new Error("Unauthorised");
+    }
+
+    // TODO: if channel is deleted also delete all the messages
+
+    await ctx.db.delete(args.channelId);
+
+    return args.channelId;
+  },
+});
+
+export const update = mutation({
+  args: {
+    channelId: v.id("channels"),
+    workspaceId: v.id("workspaces"),
+    name: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+
+    if (!userId) {
+      throw new Error("Unauthorised");
+    }
+
+    const member = await ctx.db
+      .query("members")
+      .withIndex("by_workspace_id_user_id", (q) =>
+        q.eq("workspaceId", args.workspaceId).eq("userId", userId)
+      )
+      .unique();
+
+    if (!member || member.role !== "admin") {
+      throw new Error("Unauthorised");
+    }
+
+    await ctx.db.patch(args.channelId, {
+      name: args.name,
+    });
+
+    return args.channelId;
+  },
+});
+
 export const create = mutation({
   args: {
     workspaceId: v.id("workspaces"),
