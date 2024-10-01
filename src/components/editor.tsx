@@ -84,7 +84,17 @@ const Editor = ({
               key: "Enter",
               handler: () => {
                 // TODO Submit form
-                return;
+                const text = quill.getText();
+                const addedImage = imageElementRef.current?.files?.[0] || null;
+
+                const isEmpty =
+                  !addedImage &&
+                  text.replace(/<(.|\n)*?>/g, "").trim().length === 0;
+
+                if (isEmpty) return;
+
+                const body = JSON.stringify(quill.getContents());
+                submitRef.current({ body, image: addedImage });
               },
             },
             shift_enter: {
@@ -127,7 +137,7 @@ const Editor = ({
     };
   }, [innerRef]);
 
-  const isEmpty = text.replace(/<(.|\n)*?>/g, "").trim().length === 0;
+  const isEmpty = !image && text.replace(/<(.|\n)*?>/g, "").trim().length === 0;
 
   const toggleToolbar = () => {
     setIsToolbarVisible((prev) => !prev);
@@ -142,6 +152,10 @@ const Editor = ({
     const quill = quillRef.current;
 
     quill?.insertText(quill?.getSelection()?.index || 0, emoji.native);
+  };
+
+  const handleSubmit = () => {
+    onSubmit({ body: JSON.stringify(quillRef.current?.getContents()), image });
   };
 
   return (
@@ -217,14 +231,14 @@ const Editor = ({
               <Button
                 variant={"outline"}
                 disabled={disabled}
-                onClick={() => {}}
+                onClick={onCancel}
                 size={"sm"}
               >
                 Cancel
               </Button>
               <Button
                 disabled={disabled || isEmpty}
-                onClick={() => {}}
+                onClick={handleSubmit}
                 size={"sm"}
                 className="bg-[#007a5a] hover:bg-[#007a5a]/80 text-white"
               >
@@ -235,7 +249,7 @@ const Editor = ({
           {variant === "create" && (
             <Button
               disabled={disabled || isEmpty}
-              onClick={() => {}}
+              onClick={handleSubmit}
               size={"iconSm"}
               className={cn(
                 "ml-auto",
