@@ -4,6 +4,7 @@ import Hint from "./hint";
 import { format, isToday, isYesterday } from "date-fns";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import Thumbnail from "./thumbnail";
+import Toolbar from "./toolbar";
 
 // cant use the quill in server side because quill doesnt support server side rendering and nextjs does ssr so we have do dynamic import by doing ssr = false
 const Renderer = dynamic(() => import("@/components/renderer"), { ssr: false });
@@ -116,6 +117,19 @@ const Message = ({
           ) : null}
         </div>
       </div>
+      {
+        !isEditing && (
+          <Toolbar
+            isAuthor={isAuthor}
+            isPending={false}
+            handleEdit={()=>setEditing(id)}
+            handleThread={()=>{}}
+            handleDelete={()=>{}}
+            handleReaction={()=>{}}
+            hideThreadButton={hideThreadButton}
+          />
+        )
+      }
     </div>
   );
 };
