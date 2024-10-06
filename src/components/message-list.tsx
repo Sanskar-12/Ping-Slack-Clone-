@@ -1,6 +1,11 @@
 import { GetMessageReturnType } from "@/features/messages/api/use-get-messages";
 import { differenceInMinutes, format, isToday, isYesterday } from "date-fns";
 import Message from "./message";
+import ChannelHero from "./channel-hero";
+import { useState } from "react";
+import { Id } from "../../convex/_generated/dataModel";
+import { useWorkSpaceId } from "@/features/workspaces/api/use-workspace-id";
+import { useCurrentMember } from "@/features/members/api/use-current-members";
 
 const TIME_THRESHOLD = 5;
 
@@ -34,6 +39,11 @@ const MessageList = ({
   isLoadingMore,
   canLoadMore,
 }: MessageListProps) => {
+  const [editingId, setEditingId] = useState<Id<"messages"> | null>(null);
+
+  const workspaceId = useWorkSpaceId();
+  const { data: currentMember } = useCurrentMember({ workspaceId });
+
   // groupedMessages will return me an object which has the key as the date and the value will the array of messages which has the creationTime that of the key
   const groupedMessages = data?.reduce(
     (groups, message) => {
@@ -84,16 +94,19 @@ const MessageList = ({
                 threadCount={message.threadCount}
                 threadImage={message.threadImage}
                 threadTimestamp={message.threadTimestamp}
-                isAuthor={false}
-                isEditing={false}
-                setEditing={() => {}}
+                isAuthor={message.memberId === currentMember?._id}
+                isEditing={editingId === message._id}
+                setEditing={setEditingId}
                 isCompact={isCompact}
-                hideThreadButton={false}
+                hideThreadButton={variant === "thread"}
               />
             );
           })}
         </div>
       ))}
+      {variant === "channel" && channelName && channelCreationTime && (
+        <ChannelHero name={channelName} creationTime={channelCreationTime} />
+      )}
     </div>
   );
 };
