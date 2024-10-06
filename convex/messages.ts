@@ -73,15 +73,15 @@ const getMember = async (
 
 export const get = query({
   args: {
-    channelId: v.optional(v.id('channels')),
-    conversationId: v.optional(v.id('conversations')),
-    parentMessageId: v.optional(v.id('messages')),
+    channelId: v.optional(v.id("channels")),
+    conversationId: v.optional(v.id("conversations")),
+    parentMessageId: v.optional(v.id("messages")),
     paginationOpts: paginationOptsValidator,
   },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
 
-    if (!userId) throw new Error('Unauthorized.');
+    if (!userId) throw new Error("Unauthorized.");
 
     let _conversationId = args.conversationId;
 
@@ -89,17 +89,20 @@ export const get = query({
     if (!args.conversationId && !args.channelId && args.parentMessageId) {
       const parentMessage = await ctx.db.get(args.parentMessageId);
 
-      if (!parentMessage) throw new Error('Parent message not found.');
+      if (!parentMessage) throw new Error("Parent message not found.");
 
       _conversationId = parentMessage.conversationId;
     }
 
     const results = await ctx.db
-      .query('messages')
-      .withIndex('by_channel_id_parent_message_id_conversation_id', (q) =>
-        q.eq('channelId', args.channelId).eq('parentMessageId', args.parentMessageId).eq('conversationId', _conversationId),
+      .query("messages")
+      .withIndex("by_channel_id_parent_message_id_conversation_id", (q) =>
+        q
+          .eq("channelId", args.channelId)
+          .eq("parentMessageId", args.parentMessageId)
+          .eq("conversationId", _conversationId)
       )
-      .order('desc')
+      .order("desc")
       .paginate(args.paginationOpts);
 
     return {
@@ -108,13 +111,17 @@ export const get = query({
         await Promise.all(
           results.page.map(async (message) => {
             const member = await populateMember(ctx, message.memberId);
-            const user = member ? await populateUser(ctx, member?.userId) : null;
+            const user = member
+              ? await populateUser(ctx, member?.userId)
+              : null;
 
             if (!member || !user) return null;
 
             const reactions = await populateReactions(ctx, message._id);
             const thread = await populateThread(ctx, message._id);
-            const image = message.image ? await ctx.storage.getUrl(message.image) : undefined;
+            const image = message.image
+              ? await ctx.storage.getUrl(message.image)
+              : undefined;
 
             const reactionsWithCounts = reactions.map((reaction) => ({
               ...reaction,
@@ -123,23 +130,29 @@ export const get = query({
 
             const dedupedReactions = reactionsWithCounts.reduce(
               (acc, reaction) => {
-                const existingReaction = acc.find((r) => r.value === reaction.value);
+                const existingReaction = acc.find(
+                  (r) => r.value === reaction.value
+                );
 
                 if (existingReaction) {
-                  existingReaction.memberIds = Array.from(new Set([...existingReaction.memberIds, reaction.memberId]));
+                  existingReaction.memberIds = Array.from(
+                    new Set([...existingReaction.memberIds, reaction.memberId])
+                  );
                 } else {
                   acc.push({ ...reaction, memberIds: [reaction.memberId] });
                 }
 
                 return acc;
               },
-              [] as (Doc<'reactions'> & {
+              [] as (Doc<"reactions"> & {
                 count: number;
-                memberIds: Id<'members'>[];
-              })[],
+                memberIds: Id<"members">[];
+              })[]
             );
 
-            const reactionsWithoutMemberIdProperty = dedupedReactions.map(({ memberId, ...rest }) => rest);
+            const reactionsWithoutMemberIdProperty = dedupedReactions.map(
+              ({ memberId, ...rest }) => rest
+            );
 
             return {
               ...message,
@@ -151,12 +164,15 @@ export const get = query({
               threadImage: thread.image,
               threadTimestamp: thread.timestamp,
             };
-          }),
+          })
         )
-      ).filter((message): message is NonNullable<typeof message> => message !== null),
+      ).filter(
+        (message): message is NonNullable<typeof message> => message !== null
+      ),
     };
   },
 });
+
 export const create = mutation({
   args: {
     body: v.string(),
@@ -203,5 +219,67 @@ export const create = mutation({
     });
 
     return messageId;
+  },
+});
+
+export const update = mutation({
+  args: {
+    messageId: v.id("messages"),
+    body: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+
+    if (!userId) {
+      throw new Error("Unauthorised");
+    }
+
+    const message = await ctx.db.get(args.messageId);
+
+    if (!message) {
+      throw new Error("Message not found");
+    }
+
+    const member = await getMember(ctx, message.workspaceId, userId);
+
+    if (!member || member._id !== message.memberId) {
+      throw new Error("Unauthorized");
+    }
+
+    await ctx.db.patch(args.messageId, {
+      body: args.body,
+      updatedAt: Date.now(),
+    });
+
+    return args.messageId;
+  },
+});
+
+export const remove = mutation({
+  args: {
+    messageId: v.id("messages"),
+  },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+
+    if (!userId) {
+      throw new Error("Unauthorised");
+    }
+
+    const message = await ctx.db.get(args.messageId);
+
+    if (!message) {
+      throw new Error("Message not found");
+    }
+
+    const member = await getMember(ctx, message.workspaceId, userId);
+
+    if (!member || member._id !== message.memberId) {
+      throw new Error("Unauthorized");
+    }
+
+    await ctx.db.delete(args.messageId);
+
+    return args.messageId;
   },
 });

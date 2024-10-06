@@ -96,7 +96,7 @@ const MessageList = ({
                 threadTimestamp={message.threadTimestamp}
                 isAuthor={message.memberId === currentMember?._id}
                 isEditing={editingId === message._id}
-                setEditing={setEditingId}
+                setEditingId={setEditingId}
                 isCompact={isCompact}
                 hideThreadButton={variant === "thread"}
               />
