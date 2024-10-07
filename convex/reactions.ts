@@ -51,6 +51,7 @@ export const toggle = mutation({
       )
       .first();
 
+
     if (existingReactionsFromUser) {
       await ctx.db.delete(existingReactionsFromUser._id);
 
