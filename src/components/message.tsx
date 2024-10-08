@@ -12,6 +12,7 @@ import { useDeleteMessages } from "@/features/messages/api/use-delete-message";
 import useConfirm from "@/hooks/use-confirm";
 import { useToggleReactions } from "@/features/reactions/api/use-toggle-reactions";
 import Reactions from "./reactions";
+import { usePanel } from "@/hooks/use-panel";
 
 // cant use the quill in server side because quill doesnt support server side rendering and nextjs does ssr so we have do dynamic import by doing ssr = false
 const Renderer = dynamic(() => import("@/components/renderer"), { ssr: false });
@@ -65,6 +66,8 @@ const Message = ({
   threadImage,
   threadTimestamp,
 }: MessageProps) => {
+  const { parentMessageId, onOpenMessage, onClose } = usePanel();
+
   const avatarFallback = authorName.charAt(0).toUpperCase();
 
   const [ConfirmDialog, confirm] = useConfirm({
@@ -112,7 +115,9 @@ const Message = ({
         onSuccess: () => {
           toast.success("Message Deleted");
 
-          // TODO: Close thread if opened
+          if (parentMessageId === id) {
+            onClose();
+          }
         },
         onError: () => {
           toast.error("Failed to delete message");
@@ -181,7 +186,7 @@ const Message = ({
               isAuthor={isAuthor}
               isPending={isPending}
               handleEdit={() => setEditingId(id)}
-              handleThread={() => {}}
+              handleThread={() => onOpenMessage(id)}
               handleDelete={handleDelete}
               handleReaction={handleReaction}
               hideThreadButton={hideThreadButton}
@@ -256,7 +261,7 @@ const Message = ({
             isAuthor={isAuthor}
             isPending={false}
             handleEdit={() => setEditingId(id)}
-            handleThread={() => {}}
+            handleThread={() => onOpenMessage(id)}
             handleDelete={handleDelete}
             handleReaction={handleReaction}
             hideThreadButton={hideThreadButton}
