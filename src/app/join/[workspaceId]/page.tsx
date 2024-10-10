@@ -22,6 +22,8 @@ const JoinPage = () => {
 
   const isMember = useMemo(() => data?.isMember, [data?.isMember]);
 
+  
+
   useEffect(() => {
     if (isMember) {
       router.push(`/workspace/${workspaceId}`);
