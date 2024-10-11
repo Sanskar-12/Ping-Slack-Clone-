@@ -95,6 +95,7 @@ const MessageList = ({
                 createdAt={message._creationTime}
                 threadCount={message.threadCount}
                 threadImage={message.threadImage}
+                threadName={message.threadName}
                 threadTimestamp={message.threadTimestamp}
                 isAuthor={message.memberId === currentMember?._id}
                 isEditing={editingId === message._id}

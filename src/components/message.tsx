@@ -13,6 +13,7 @@ import useConfirm from "@/hooks/use-confirm";
 import { useToggleReactions } from "@/features/reactions/api/use-toggle-reactions";
 import Reactions from "./reactions";
 import { usePanel } from "@/hooks/use-panel";
+import ThreadBar from "./thread-bar";
 
 // cant use the quill in server side because quill doesnt support server side rendering and nextjs does ssr so we have do dynamic import by doing ssr = false
 const Renderer = dynamic(() => import("@/components/renderer"), { ssr: false });
@@ -41,6 +42,7 @@ interface MessageProps {
   threadCount?: number;
   threadImage?: string;
   threadTimestamp?: number;
+  threadName?:string
 }
 
 const formatFullTime = (date: Date) => {
@@ -65,6 +67,7 @@ const Message = ({
   threadCount,
   threadImage,
   threadTimestamp,
+  threadName
 }: MessageProps) => {
   const { parentMessageId, onOpenMessage, onClose } = usePanel();
 
@@ -178,6 +181,13 @@ const Message = ({
                   </span>
                 ) : null}
                 <Reactions data={reactions} onChange={handleReaction} />
+                <ThreadBar
+                  count={threadCount}
+                  image={threadImage}
+                  timestamp={threadTimestamp}
+                  onClick={()=>onOpenMessage(id)}
+                  name={threadName}
+                />
               </div>
             )}
           </div>
@@ -253,6 +263,13 @@ const Message = ({
                 <span className="text-xs text-muted-foreground">(edited)</span>
               ) : null}
               <Reactions data={reactions} onChange={handleReaction} />
+              <ThreadBar
+                count={threadCount}
+                image={threadImage}
+                timestamp={threadTimestamp}
+                onClick={()=>onOpenMessage(id)}
+                name={threadName}
+              />
             </div>
           )}
         </div>
