@@ -17,8 +17,10 @@ import { Id } from "../../../../convex/_generated/dataModel";
 import UserItem from "./user-item";
 import { useCreateChannelsModal } from "@/features/channels/store/use-create-channels-modal";
 import { useChannelId } from "@/features/channels/api/use-workspace-id";
+import { useMemberId } from "@/features/members/api/use-member-id";
 
 const WorkSpaceSidebar = () => {
+  const memberId = useMemberId();
   const workspaceId: Id<"workspaces"> = useWorkSpaceId();
   const channelId: Id<"channels"> = useChannelId();
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -30,10 +32,10 @@ const WorkSpaceSidebar = () => {
   const { data: workspace, isLoading: workspaceLoading } = useGetWorkSpace({
     id: workspaceId,
   });
-  const { data: channels, isLoading: channelsLoading } = useGetChannels({
+  const { data: channels } = useGetChannels({
     workspaceId,
   });
-  const { data: members, isLoading: membersLoading } = useGetMembers({
+  const { data: members } = useGetMembers({
     workspaceId,
   });
 
@@ -90,6 +92,7 @@ const WorkSpaceSidebar = () => {
             id={item._id}
             label={item.user.name}
             image={item.user.image}
+            variant={item._id === memberId ? "active" : "default"}
           />
         ))}
       </WorkspaceSection>
