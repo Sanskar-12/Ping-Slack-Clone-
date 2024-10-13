@@ -42,7 +42,7 @@ interface MessageProps {
   threadCount?: number;
   threadImage?: string;
   threadTimestamp?: number;
-  threadName?:string
+  threadName?: string;
 }
 
 const formatFullTime = (date: Date) => {
@@ -67,9 +67,9 @@ const Message = ({
   threadCount,
   threadImage,
   threadTimestamp,
-  threadName
+  threadName,
 }: MessageProps) => {
-  const { parentMessageId, onOpenMessage, onClose } = usePanel();
+  const { parentMessageId, onOpenMessage, onClose, onOpenProfile } = usePanel();
 
   const avatarFallback = authorName.charAt(0).toUpperCase();
 
@@ -185,7 +185,7 @@ const Message = ({
                   count={threadCount}
                   image={threadImage}
                   timestamp={threadTimestamp}
-                  onClick={()=>onOpenMessage(id)}
+                  onClick={() => onOpenMessage(id)}
                   name={threadName}
                 />
               </div>
@@ -219,7 +219,7 @@ const Message = ({
         )}
       >
         <div className="flex items-start gap-2">
-          <button onClick={() => {}}>
+          <button onClick={() => onOpenProfile(memberId)}>
             <Avatar className="rounded-full">
               <AvatarImage
                 src={authorImage}
@@ -245,7 +245,7 @@ const Message = ({
             <div className="flex flex-col w-full overflow-hidden">
               <div className="text-sm">
                 <button
-                  onClick={() => {}}
+                  onClick={() => onOpenProfile(memberId)}
                   className="font-bold text-primary hover:underline"
                 >
                   {authorName}
@@ -267,7 +267,7 @@ const Message = ({
                 count={threadCount}
                 image={threadImage}
                 timestamp={threadTimestamp}
-                onClick={()=>onOpenMessage(id)}
+                onClick={() => onOpenMessage(id)}
                 name={threadName}
               />
             </div>
