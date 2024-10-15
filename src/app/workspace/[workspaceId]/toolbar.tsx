@@ -13,8 +13,6 @@ import {
 } from "@/components/ui/command";
 import { useGetMembers } from "@/features/members/api/use-get-members";
 import { useGetChannels } from "@/features/channels/api/use-get-channels";
-import Link from "next/link";
-import { useChannelId } from "@/features/channels/api/use-workspace-id";
 import { useRouter } from "next/navigation";
 import { Id } from "../../../../convex/_generated/dataModel";
 

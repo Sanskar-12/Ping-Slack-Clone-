@@ -58,9 +58,9 @@ const Profile = ({ memberId, onClose }: ProfileProps) => {
     memberId,
   });
 
-  const { mutate: updateMember, isPending: isUpdatingPending } =
+  const { mutate: updateMember } =
     useUpdateMember();
-  const { mutate: deleteMember, isPending: isDeletingPending } =
+  const { mutate: deleteMember } =
     useDeleteMember();
 
   const fallback = member ? member?.user.name?.charAt(0).toUpperCase() : "M";
