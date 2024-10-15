@@ -131,7 +131,7 @@ const Thread = ({ messageId, onClose }: ThreadProps) => {
     }
   };
 
-  if (isLoadingMessage) {
+  if (isLoadingMessage || status === 'LoadingFirstPage') {
     return (
       <div className="h-full flex flex-col">
         <div className="h-[49px] flex justify-between items-center px-4 border-b">
@@ -241,21 +241,26 @@ const Thread = ({ messageId, onClose }: ThreadProps) => {
             </span>
           </div>
         )}
-        <Message
-          hideThreadButton
-          memberId={message!.memberId}
-          authorName={message?.user.name}
-          authorImage={message?.user.image}
-          isAuthor={currentMember?._id === message?.memberId}
-          body={message!.body}
-          image={message?.image}
-          createdAt={message!._creationTime}
-          updatedAt={message!.updatedAt}
-          id={message!._id}
-          reactions={message!.reactions}
-          isEditing={editingId === message?._id}
-          setEditingId={setEditingId}
-        />
+        {
+          message && (
+            <Message
+            hideThreadButton
+            memberId={message.memberId}
+            authorName={message?.user.name}
+            authorImage={message?.user.image}
+            isAuthor={currentMember?._id === message?.memberId}
+            body={message.body}
+            image={message?.image}
+            createdAt={message._creationTime}
+            updatedAt={message.updatedAt}
+            id={message._id}
+            reactions={message.reactions}
+            isEditing={editingId === message?._id}
+            setEditingId={setEditingId}
+          />
+          )
+        }
+       
       </div>
       <div className="px-4">
         <Editor

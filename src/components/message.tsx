@@ -276,7 +276,7 @@ const Message = ({
         {!isEditing && (
           <Toolbar
             isAuthor={isAuthor}
-            isPending={isPending}
+            isPending={false}
             handleEdit={() => setEditingId(id)}
             handleThread={() => onOpenMessage(id)}
             handleDelete={handleDelete}
