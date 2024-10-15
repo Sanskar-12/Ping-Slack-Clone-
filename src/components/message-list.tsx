@@ -83,22 +83,22 @@ const MessageList = ({
 
             return (
               <Message
-                key={message._id}
-                id={message._id}
-                memberId={message.memberId}
-                authorImage={message.user.image}
-                authorName={message.user.name}
-                reactions={message.reactions}
-                body={message.body}
-                image={message.image}
-                updatedAt={message.updatedAt}
-                createdAt={message._creationTime}
-                threadCount={message.threadCount}
-                threadImage={message.threadImage}
-                threadName={message.threadName}
-                threadTimestamp={message.threadTimestamp}
-                isAuthor={message.memberId === currentMember?._id}
-                isEditing={editingId === message._id}
+                key={message?._id}
+                id={message?._id}
+                memberId={message?.memberId}
+                authorImage={message?.user?.image}
+                authorName={message?.user?.name}
+                reactions={message?.reactions}
+                body={message?.body}
+                image={message?.image}
+                updatedAt={message?.updatedAt}
+                createdAt={message?._creationTime}
+                threadCount={message?.threadCount}
+                threadImage={message?.threadImage}
+                threadName={message?.threadName}
+                threadTimestamp={message?.threadTimestamp}
+                isAuthor={message?.memberId === currentMember?._id}
+                isEditing={editingId === message?._id}
                 setEditingId={setEditingId}
                 isCompact={isCompact}
                 hideThreadButton={variant === "thread"}
